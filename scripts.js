@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     camera.position.z = 5;
 
     const objects = [];
+    let selectedObject = null;
+    let rotating = false;
 
     function createShape(shape) {
         let geometry;
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.screenSpacePanning = false;
     controls.minDistance = 2;
@@ -52,15 +54,24 @@ document.addEventListener('DOMContentLoaded', function () {
     dragControls.addEventListener('dragstart', function (event) {
         controls.enabled = false;
         event.object.material.color.set(0xff0000);
+        selectedObject = event.object;
     });
     dragControls.addEventListener('dragend', function (event) {
         controls.enabled = true;
         event.object.material.color.set(0x00ff00);
     });
 
+    document.getElementById('rotate-shape').addEventListener('click', function () {
+        rotating = !rotating;
+    });
+
     function animate() {
         requestAnimationFrame(animate);
-        controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+        if (rotating && selectedObject) {
+            selectedObject.rotation.x += 0.01;
+            selectedObject.rotation.y += 0.01;
+        }
+        controls.update();
         renderer.render(scene, camera);
     }
 
