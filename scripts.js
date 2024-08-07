@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded', function () {
     renderer.setSize(800, 600);
     document.getElementById('scene-container').appendChild(renderer.domElement);
 
-    const light = new THREE.AmbientLight(0x404040); // soft white light
+    const light = new THREE.AmbientLight(0x404040);
     scene.add(light);
 
     camera.position.z = 5;
+
+    const objects = [];
 
     function createShape(shape) {
         let geometry;
@@ -32,7 +34,19 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('add-shape').addEventListener('click', function () {
         const shape = document.getElementById('shape-selector').value;
         const mesh = createShape(shape);
+        mesh.position.x = (Math.random() - 0.5) * 10;
+        mesh.position.y = (Math.random() - 0.5) * 10;
+        mesh.position.z = (Math.random() - 0.5) * 10;
         scene.add(mesh);
+        objects.push(mesh);
+    });
+
+    const controls = new THREE.DragControls(objects, camera, renderer.domElement);
+    controls.addEventListener('dragstart', function (event) {
+        event.object.material.color.set(0xff0000);
+    });
+    controls.addEventListener('dragend', function (event) {
+        event.object.material.color.set(0x00ff00);
     });
 
     function animate() {
