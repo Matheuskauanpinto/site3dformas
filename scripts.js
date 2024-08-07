@@ -41,16 +41,26 @@ document.addEventListener('DOMContentLoaded', function () {
         objects.push(mesh);
     });
 
-    const controls = new THREE.DragControls(objects, camera, renderer.domElement);
-    controls.addEventListener('dragstart', function (event) {
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    controls.dampingFactor = 0.25;
+    controls.screenSpacePanning = false;
+    controls.minDistance = 2;
+    controls.maxDistance = 500;
+
+    const dragControls = new THREE.DragControls(objects, camera, renderer.domElement);
+    dragControls.addEventListener('dragstart', function (event) {
+        controls.enabled = false;
         event.object.material.color.set(0xff0000);
     });
-    controls.addEventListener('dragend', function (event) {
+    dragControls.addEventListener('dragend', function (event) {
+        controls.enabled = true;
         event.object.material.color.set(0x00ff00);
     });
 
     function animate() {
         requestAnimationFrame(animate);
+        controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
         renderer.render(scene, camera);
     }
 
